@@ -21,21 +21,21 @@ body.list {
     overflow: auto;
 }
 
-#devices {
+/* #devices {
     padding: 20px 0;
     width: 100%;
     height: calc(100% - 40px);
     overflow-y: auto;
-}
+} */
 
-body.stream #devices {
+/* body.stream #devices {
     background-color: var(--device-list-default-color);
     opacity: .8;
     position: absolute;
     top: 0;
     left: 0;
     z-index: 3;
-}
+} */
 
 body.list #device_list_menu {
     display: none;
@@ -49,10 +49,10 @@ body.list #device_list_menu {
     z-index: 4;
 }
 
-#devices .device-list button {
+/* #devices .device-list button {
     font-size: var(--font-size);
     color: var(--button-text-color);
-}
+} */
 
 #devices .device-list div.device:nth-child(2n+1){
     background-color: var(--device-list-default-color);
@@ -116,12 +116,12 @@ body.list #device_list_menu {
     width: 100%;
 }
 
-#devices .device-list {
-    border-spacing: 0;
-    border-collapse: collapse;
-    font-family: monospace;
-    font-size: var(--font-size);
-}
+/* #devices .device-list { */
+    /* border-spacing: 0;
+    border-collapse: collapse; */
+    /* font-family: monospace; */
+    /* font-size: var(--font-size); */
+/* } */
 
 #devices .device-list div.device {
     padding: 5px 20px 5px;

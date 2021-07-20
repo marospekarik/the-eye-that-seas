@@ -19,8 +19,6 @@ window.onload = function (): void {
     StreamClientScrcpy.registerPlayer(MsePlayer);
     StreamClientScrcpy.registerPlayer(TinyH264Player);
 
-    // RemoteDeo.start();
-
     if (action === StreamClientScrcpy.ACTION && typeof parsedQuery.udid === 'string') {
         StreamClientScrcpy.start(parsedQuery);
     } else if (action === StreamClientQVHack.ACTION && typeof parsedQuery.udid === 'string') {

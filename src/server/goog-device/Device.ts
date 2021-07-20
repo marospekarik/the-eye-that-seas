@@ -1,4 +1,5 @@
 import AdbKit from '@devicefarmer/adbkit';
+import cron from 'node-cron';
 import AdbKitClient from '@devicefarmer/adbkit/lib/adb/client';
 import PushTransfer from '@devicefarmer/adbkit/lib/adb/sync/pushtransfer';
 import { spawn } from 'child_process';
@@ -41,6 +42,7 @@ export class Device extends TypedEmitter<DeviceEvents> {
         super();
         this.TAG = `[${udid}]`;
         this.descriptor = {
+            ip: '192',
             udid,
             state,
             interfaces: [],
@@ -55,6 +57,19 @@ export class Device extends TypedEmitter<DeviceEvents> {
         };
         this.client = AdbKit.createClient();
         this.setState(state);
+        const self = this;
+        cron.schedule('30 23 * * *', function () {
+            console.log('---------------------');
+            console.log('Starting screen: (repeats every day at 23:30)');
+            console.log('---------------------');
+            self.runScreenToggle();
+        });
+        cron.schedule('30 07 * * *', function () {
+            console.log('---------------------');
+            console.log('Starting screen: (repeats every day at 07:30)');
+            console.log('---------------------');
+            self.runScreenToggle();
+        });
     }
 
     public setState(state: string): void {
@@ -72,6 +87,13 @@ export class Device extends TypedEmitter<DeviceEvents> {
 
     public isConnected(): boolean {
         return this.connected;
+    }
+
+    // create a new adbkit client and run a command
+    public async runShellCommandAdbKitTwo(command: string): Promise<string> {
+        const client = AdbKit.createClient();
+        const result = await client.shell(command, this.udid);
+        return result.toString().trim();
     }
 
     public async getPidOf(processName: string): Promise<number[] | undefined> {
@@ -95,6 +117,20 @@ export class Device extends TypedEmitter<DeviceEvents> {
 
     public killProcess(pid: number): Promise<string> {
         const command = `kill ${pid}`;
+        return this.runShellCommandAdbKit(command);
+    }
+
+    public runDeoApp(): Promise<string> {
+        const command = `am start -a "com.oculus.vrshell/.MainActivity" -n com.deovr.gearvr/com.tiledmedia.clearvrforunityandroid.ClearVRForUnityAndroidActivity`;
+        return this.runShellCommandAdbKit(command);
+    }
+    public runMenu(): Promise<string> {
+        const command = `input keyevent 66`;
+        return this.runShellCommandAdbKit(command);
+    }
+    public runScreenToggle(): Promise<string> {
+        const command = `input keyevent 26`;
+        console.log(`Running Screen Toggle: ${command}`);
         return this.runShellCommandAdbKit(command);
     }
 

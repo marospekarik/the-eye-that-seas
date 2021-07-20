@@ -88,7 +88,7 @@ export abstract class BaseDeviceTracker<DD extends BaseDeviceDescriptor, TE> ext
             nameEl.className = 'tracker-name';
         }
         nameEl.innerText = name;
-        parent.insertBefore(nameEl, parent.firstChild);
+        // parent.insertBefore(nameEl, parent.firstChild);
     }
 
     private getOrCreateTrackerBlock(parent: Element, controlCenterName: string): Element {

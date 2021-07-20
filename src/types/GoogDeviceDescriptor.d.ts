@@ -10,5 +10,6 @@ export default interface GoogDeviceDescriptor extends BaseDeviceDescriptor {
     'wifi.interface': string;
     interfaces: NetInterface[];
     pid: number;
+    ip: string;
     'last.seen.active.timestamp': number;
 }

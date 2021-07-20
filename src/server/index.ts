@@ -7,7 +7,6 @@ import { Service, ServiceClass } from './services/Service';
 import { MwFactory } from './mw/Mw';
 import { WebsocketProxy } from './mw/WebsocketProxy';
 import { HostTracker } from './mw/HostTracker';
-// import { RemoteDeo } from './services/RemoteDeo';
 
 const servicesToStart: ServiceClass[] = [HttpServer, WebSocketServer];
 const mwList: MwFactory[] = [HostTracker, WebsocketProxy];
@@ -38,7 +37,6 @@ async function loadGoogModules() {
     mwList.push(RemoteShell);
     mwList.push(RemoteDevtools);
     mwList.push(WebsocketProxyOverAdb);
-
 }
 loadPlatformModulesPromises.push(loadGoogModules());
 /// #endif
@@ -49,7 +47,6 @@ async function loadApplModules() {
     const { DeviceTracker } = await import('./appl-device/mw/DeviceTracker');
     const { StreamProxy } = await import('./appl-device/mw/StreamProxy');
     const { WebDriverAgentProxy } = await import('./appl-device/mw/WebDriverAgentProxy');
-
 
     // Hack to reduce log-level of appium libs
     const npmlog = await import('npmlog');
@@ -81,7 +78,7 @@ Promise.all(loadPlatformModulesPromises).then(() => {
     });
 
     const wsService = WebSocketServer.getInstance();
-    
+
     mwList.forEach((mwFactory: MwFactory) => {
         wsService.registerMw(mwFactory);
     });

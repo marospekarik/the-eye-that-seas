@@ -60,13 +60,13 @@ a:visited {
 }
 
 body {
-    color: var(--text-color);
+    /* color: var(--text-color);
     background-color: var(--main-bg-color);
     position: absolute;
     margin: 0;
     height: 100%;
     width: 100%;
-    overflow: hidden;
+    overflow: hidden; */
 }
 
 
@@ -74,9 +74,9 @@ body.shell {
     background-color: var(--shell-bg-color);
 }
 
-body.stream {
+/* body.stream {
     background-color: var(--stream-bg-color);
-}
+} */
 
 .terminal-container {
     width: 100%;
@@ -99,7 +99,7 @@ body.stream {
 
 .device-view {
     z-index: 1;
-    float: right;
+    /* float: right; */
     display: inline-block;
 }
 
@@ -114,7 +114,7 @@ body.stream {
 }
 
 .video {
-    float: right;
+    /* float: right; */
     max-height: 100%;
     max-width: 100%;
     background-color: #000000;
@@ -122,8 +122,8 @@ body.stream {
 
 
 .control-buttons-list {
-    float: right;
-    width: 3.715rem;
+    /* float: right; */
+    /* width: 3.715rem; */
     background-color: var(--control-buttons-bg-color);
 }
 

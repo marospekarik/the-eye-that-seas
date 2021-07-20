@@ -6,6 +6,11 @@ export class ControlCenterCommand {
     public static RUN_WDA = 'run-wda';
     public static REQUEST_WDA = 'request-wda';
     public static SEND_DEO = 'send-deo';
+    public static CONNECT_DEO = 'connect-deo';
+
+    public static RUN_DEO = 'run-deo';
+    public static SCREEN_TOGGLE = 'screen-toggle'; //input keyevent 26
+    public static MENU = 'menu'; //input keyevent 66
 
     private id = -1;
     private type = '';
@@ -47,7 +52,11 @@ export class ControlCenterCommand {
             case this.CONFIGURE_STREAM:
             case this.RUN_WDA:
             case this.SEND_DEO:
-                console.log("send deo passed")
+            case this.CONNECT_DEO:
+            case this.RUN_DEO:
+            case this.SCREEN_TOGGLE:
+            case this.MENU:
+                console.log(command);
                 return command;
             default:
                 throw new Error(`Unknown command "${body.command}"`);

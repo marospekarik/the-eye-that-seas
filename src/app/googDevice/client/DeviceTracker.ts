@@ -1,10 +1,13 @@
 import '../../../style/devicelist.css';
+import '../../../style/tailwind.min.css';
+
 import { BaseDeviceTracker } from '../../client/BaseDeviceTracker';
 import { SERVER_PORT } from '../../../common/Constants';
 import { ACTION } from '../../../common/Action';
 import GoogDeviceDescriptor from '../../../types/GoogDeviceDescriptor';
 import { ControlCenterCommand } from '../../../common/ControlCenterCommand';
 import { StreamClientScrcpy } from './StreamClientScrcpy';
+import { BroadwayPlayer } from '../../player/BroadwayPlayer';
 import SvgImage from '../../ui/SvgImage';
 import { html } from '../../ui/HtmlTag';
 // import { DevtoolsClient } from './DevtoolsClient';
@@ -129,9 +132,29 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
         const command = button.getAttribute(Attribute.COMMAND) as string;
         const pid = parseInt(pidString, 10);
 
-        var inputValue = null;
-        if(command == ControlCenterCommand.SEND_DEO) {
+        let inputValue = null;
+        if (command == ControlCenterCommand.SEND_DEO) {
             inputValue = (<HTMLInputElement>document.getElementById('deo-input')).value;
+        }
+        if (command == ControlCenterCommand.CONNECT_DEO) {
+            inputValue = (<HTMLInputElement>document.getElementById('deo-input-ip')).value;
+        }
+        console.log(command);
+        if (command == 'start-stream') {
+            inputValue = (<HTMLInputElement>document.getElementById('deo-input-ip')).value;
+
+            StreamClientScrcpy.registerPlayer(BroadwayPlayer);
+
+            const parsedQuery = {
+                action: 'stream',
+                udid: `${udid}`,
+                player: 'broadway',
+                ws: `ws://${inputValue}:8886/`,
+            };
+            // StreamClientScrcpy.onDisconnected();
+            StreamClientScrcpy.start(parsedQuery);
+
+            return;
         }
 
         const data: Message = {
@@ -143,7 +166,6 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
                 inputValue: inputValue,
             },
         };
-       
 
         if (this.hasConnection()) {
             (this.ws as WebSocket).send(JSON.stringify(data));
@@ -185,6 +207,8 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
         let hasPid = false;
         let selectInterface: HTMLSelectElement | undefined;
         const servicesId = `device_services_${fullName}`;
+        const ip = device.ip;
+        console.log(ip);
         const row = html`<div class="device ${isActive ? 'active' : 'not-active'}">
             <div class="device-header">
                 <div class="device-name">${device['ro.product.manufacturer']} ${device['ro.product.model']}</div>
@@ -204,26 +228,43 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
 
         const shellEntry = ShellClient.createEntryForDeviceList(device, blockClass, this.params);
 
-        // DEO REMOTE INPUT
-        const deoInput = document.createElement('input');
-        deoInput.classList.add(blockClass);
-        deoInput.setAttribute('id', 'deo-input');
-        deoInput.setAttribute(Attribute.UDID, device.udid);
-        services.appendChild(deoInput);
-        // DEO REMOTE CONTROL
-        const deoEntry = document.createElement('button');
-        deoEntry.classList.add('deo', blockClass);
-        deoEntry.innerText = "PLAY";
-        deoEntry.setAttribute(Attribute.COMMAND, ControlCenterCommand.SEND_DEO);
-        deoEntry.onclick = this.onActionButtonClick;
-        deoEntry.setAttribute(Attribute.UDID, device.udid);
-        services.appendChild(deoEntry);
+        const extraControls = html`<div class="flex flex-col md:flex-row">
+			<div class="m-4">
+				<label class="block text-gray-700 text-sm font-bold mb-2" for="deo-input">
+					Movie File Name:
+				</label>
+				<input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="Download/R0010024edit_360.MP4" id="deo-input"></input>
+				<button data-command="${ControlCenterCommand.SEND_DEO}" class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="deo-play">Play</button>
+			</div>
+			<div class="m-4">
+				<label class="block text-gray-700 text-sm font-bold mb-2" for="deo-input">
+					Remote Oculus IP:
+				</label>
+				<input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="192.168.1.250" id="deo-input-ip"></input>
+				<button data-command="${ControlCenterCommand.CONNECT_DEO}" class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="deo-connect">Connect</button>
+			</div>
+			<div class="mx-4 flex flex-col">
+				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="deo-run" data-command="${ControlCenterCommand.RUN_DEO}" data-udid="${device.udid}" data-pid="${device.pid}">Launch DeoVR</button>
+				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="screen-toggle" data-command="${ControlCenterCommand.SCREEN_TOGGLE}" data-udid="${device.udid}" data-pid="${device.pid}">Toggle screen</button>
+				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="menu" data-command="${ControlCenterCommand.MENU}" data-udid="${device.udid}" data-pid="${device.pid}">Menu</button>
+				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="stream" data-command="start-stream" data-udid="${device.udid}" data-pid="${device.pid}">Start Stream</button>
+			</div>
+		</div>`.content;
+
+        const listId = ['deo-play', 'deo-connect', 'deo-run', 'screen-toggle', 'menu', 'stream'];
+        for (const item of listId) {
+            const entry = extraControls.getElementById(item);
+            if (entry) {
+                entry.onclick = this.onActionButtonClick;
+            }
+        }
 
         shellEntry && services.appendChild(shellEntry);
         // const devtoolsEntry = DevtoolsClient.createEntryForDeviceList(device, blockClass, this.params);
         // devtoolsEntry && services.appendChild(devtoolsEntry);
 
         const streamEntry = StreamClientScrcpy.createEntryForDeviceList(device, blockClass, fullName, this.params);
+
         streamEntry && services.appendChild(streamEntry);
 
         DESC_COLUMNS.forEach((item) => {
@@ -337,6 +378,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
         }
 
         tbody.appendChild(row);
+        tbody.appendChild(extraControls);
         if (DeviceTracker.CREATE_DIRECT_LINKS && hasPid && selectInterface) {
             this.updateLink(selectInterface, false);
         }

@@ -1,5 +1,5 @@
 import Net from 'net';
-import { Service } from '../../services/Service';
+import { Service } from '../../services/DeoService';
 
 export class RemoteDeo implements Service {
     private static instance?: RemoteDeo;
@@ -21,65 +21,74 @@ export class RemoteDeo implements Service {
 
     protected title = 'RemoteDeo';
 
-    protected readonly data: any;
-    protected end: any;
+    protected data: any;
     protected client: any;
     protected lastSendTime: any;
     protected ticker: any;
+    protected initialized: any;
+    protected lastErrorTime: any;
+    protected host: string;
 
     constructor() {
-        //this.attachToServer()
+        this.client = undefined;
         this.ticker = null;
+        this.initialized = false;
+        this.lastErrorTime = Date.now();
+        this.host = '192.168.43.76';
+        this.data = null;
     }
 
     public getName() {
         return '';
     }
 
+    public getData() {
+        return this.data;
+    }
+
     public release() {
         return '';
     }
 
-    public attachToServer() {
+    public attachToServer(ip: string) {
         const that = this;
         const port = 23554;
-        const host = '192.168.43.76';
-        const client = new Net.Socket();
+        const host = this.host;
+        const isNewIp = host !== ip;
+        console.log(isNewIp);
+        this.host = ip;
+        let client = this.client;
+        if (isNewIp) {
+            this.end();
+        }
+        if (!this.client) {
+            client = new Net.Socket();
+        }
         client
             .connect({ port: port, host: host }, () => {
                 console.log('TCP connection established with the server.');
-                // const jsonObject = {"path":"/storage/emulated/0/Download/R0010005.MP4","duration":null,"currentTime":0.0,"playbackSpeed":0.0,"playerState":0}
-                // const jsonString = JSON.stringify(jsonObject)
-                // var json_as_bytes = new TextEncoder().encode(jsonString)
-                // console.log(json_as_bytes.length)
-                // var length_as_bytes = new Uint8Array([json_as_bytes.length, 0,0,0])
-                // console.log(length_as_bytes)
-
-                // const result = new Uint8Array([...length_as_bytes, ...json_as_bytes ])
                 this.ticker = setInterval(that.sendRemoteData, 1000);
-                // client.write(result)
             })
-            .on('data', function () {
+            .on('data', function (chunk: any) {
+                console.log(chunk.toString());
+                that.data = chunk.toString();
                 // console.log(`Data received from the server: ${chunk.toString()}.`);
-                // client.write("");
-                // Request an end to the connection after the data has been received.
-                // client.end();
+                // TODO: add state from the received data
             })
-            .on('error', function (e) {
+            .on('error', function (e: any) {
                 console.log('Server is down, reconnecting:' + e.message);
-                clearInterval(that.ticker);
-                that.attachToServer();
             })
             .on('end', () => {
                 clearInterval(that.ticker);
+                that.end();
                 console.log('Requested an end to the TCP connection');
             });
         this.client = client;
         return client;
     }
 
-    public start(): void {
-        this.attachToServer();
+    public start(ip: string): void {
+        this.attachToServer(ip);
     }
 
     public sendRemoteData = (data: any) => {
@@ -102,5 +111,15 @@ export class RemoteDeo implements Service {
 
     public setBodyClass(text: string): void {
         document.body.className = text;
+    }
+
+    public end(): void {
+        if (this.client) {
+            this.client.end();
+            this.client = undefined;
+        }
+        clearInterval(this.ticker);
+        this.client = undefined;
+        this.initialized = false;
     }
 }

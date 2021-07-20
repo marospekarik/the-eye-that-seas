@@ -25,14 +25,13 @@ export class ControlCenter extends BaseControlCenter<GoogDeviceDescriptor> imple
     private deviceMap: Map<string, Device> = new Map();
     private descriptors: Map<string, GoogDeviceDescriptor> = new Map();
     private readonly id: string;
-    private remoteDeo: any
+    private remoteDeo: any;
 
     protected constructor() {
         super();
         const idString = `goog|${os.hostname()}|${os.uptime()}`;
         this.id = crypto.createHash('md5').update(idString).digest('hex');
-        this.remoteDeo = new RemoteDeo
-        this.remoteDeo.start()
+        this.remoteDeo = null;
     }
 
     public static getInstance(): ControlCenter {
@@ -96,6 +95,18 @@ export class ControlCenter extends BaseControlCenter<GoogDeviceDescriptor> imple
             this.deviceMap.set(udid, device);
         }
     }
+
+    public onStartDeo = (ip: string): void => {
+        console.log(ip + ', onstart deo');
+        if (!this.remoteDeo) {
+            console.log('creating new deo instance');
+            this.remoteDeo = new RemoteDeo();
+            this.remoteDeo.start();
+        } else {
+            this.remoteDeo.end();
+            this.remoteDeo.start(ip);
+        }
+    };
 
     public async init(): Promise<void> {
         if (this.initialized) {
@@ -162,26 +173,49 @@ export class ControlCenter extends BaseControlCenter<GoogDeviceDescriptor> imple
     public async runCommand(command: ControlCenterCommand): Promise<void> {
         const udid = command.getUdid();
         const device = this.getDevice(udid);
-        const deo = this.remoteDeo
-        if (!device) {
-            console.error(`Device with udid:"${udid}" not found`);
-            return;
-        }
+        const deo = this.remoteDeo;
+        // if (!device && command.getData().udid) {
+        //     console.error(`Device with udid:"${udid}" not found`);
+        //     return;
+        // }
         const type = command.getType();
         switch (type) {
             case ControlCenterCommand.SEND_DEO:
-                const data = command.getData()
-                const jsonObject = {"path":`/storage/emulated/0/${data.inputValue || "Download/R0010005.MP4"}`,"duration":null,"currentTime":0.0,"playbackSpeed":0.0,"playerState":0}
-                await deo.sendRemoteData(jsonObject)
+                if (deo) {
+                    const data = command.getData();
+                    const jsonObject = {
+                        path: `/storage/emulated/0/${data.inputValue || 'Download/R0010005.MP4'}`,
+                        duration: null,
+                        currentTime: 0.0,
+                        playbackSpeed: 0.0,
+                        playerState: 0,
+                    };
+                    await deo.sendRemoteData(jsonObject);
+                } else {
+                    console.log('No deo instance!');
+                }
+                return;
+            case ControlCenterCommand.CONNECT_DEO:
+                const data = command.getData();
+                this.onStartDeo(data.inputValue);
+                return;
+            case ControlCenterCommand.RUN_DEO:
+                await device?.runDeoApp();
+                return;
+            case ControlCenterCommand.SCREEN_TOGGLE:
+                await device?.runScreenToggle();
+                return;
+            case ControlCenterCommand.MENU:
+                await device?.runMenu();
                 return;
             case ControlCenterCommand.KILL_SERVER:
-                await device.killServer(command.getPid());
+                await device?.killServer(command.getPid());
                 return;
             case ControlCenterCommand.START_SERVER:
-                await device.startServer();
+                await device?.startServer();
                 return;
             case ControlCenterCommand.UPDATE_INTERFACES:
-                await device.updateInterfaces();
+                await device?.updateInterfaces();
                 return;
             default:
                 throw new Error(`Control,Center: Unsupported command: "${type}"`);
