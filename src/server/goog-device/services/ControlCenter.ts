@@ -179,24 +179,31 @@ export class ControlCenter extends BaseControlCenter<GoogDeviceDescriptor> imple
         //     return;
         // }
         const type = command.getType();
+        const data = command.getData();
+        console.log(type);
         switch (type) {
-            case ControlCenterCommand.SEND_DEO:
-                if (deo) {
-                    const data = command.getData();
-                    const jsonObject = {
-                        path: `/storage/emulated/0/${data.inputValue || 'Download/R0010005.MP4'}`,
-                        duration: null,
-                        currentTime: 0.0,
-                        playbackSpeed: 0.0,
-                        playerState: 0,
-                    };
-                    await deo.sendRemoteData(jsonObject);
-                } else {
+            case ControlCenterCommand.SEND_DEO || 'play-sunny' || 'play-rainy' || 'play-cloudy' || 'play-snowy':
+                if (!deo) {
                     console.log('No deo instance!');
+                    return;
                 }
+
+                // const storage = `/storage/emulated/0/${data.inputValue}`;
+                const stream = data.inputValue;
+                console.log(stream);
+                const jsonObject = {
+                    path: `${stream || 'Download/R0010005.MP4'}`,
+                    duration: null,
+                    currentTime: 0.0,
+                    playbackSpeed: 0.0,
+                    playerState: 0,
+                };
+                console.log(jsonObject);
+                const answer = await deo.sendRemoteData(jsonObject);
+                console.log(answer);
+
                 return;
             case ControlCenterCommand.CONNECT_DEO:
-                const data = command.getData();
                 this.onStartDeo(data.inputValue);
                 return;
             case ControlCenterCommand.RUN_DEO:

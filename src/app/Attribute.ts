@@ -10,4 +10,5 @@ export const Attribute = {
     HOSTNAME: 'data-hostname',
     PORT: 'data-port',
     VALUE: 'data-value',
+    EXTRA: 'data-extra',
 };

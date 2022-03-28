@@ -128,6 +128,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
     onActionButtonClick = (e: MouseEvent): void => {
         const button = e.currentTarget as HTMLButtonElement;
         const udid = button.getAttribute(Attribute.UDID);
+        const extraData = button.getAttribute(Attribute.EXTRA);
         const pidString = button.getAttribute(Attribute.PID) || '';
         const command = button.getAttribute(Attribute.COMMAND) as string;
         const pid = parseInt(pidString, 10);
@@ -135,6 +136,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
         let inputValue = null;
         if (command == ControlCenterCommand.SEND_DEO) {
             inputValue = (<HTMLInputElement>document.getElementById('deo-input')).value;
+            if (extraData) inputValue = 'Download/' + extraData + '/1_360.mp4';
         }
         if (command == ControlCenterCommand.CONNECT_DEO) {
             inputValue = (<HTMLInputElement>document.getElementById('deo-input-ip')).value;
@@ -249,9 +251,26 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
 				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="menu" data-command="${ControlCenterCommand.MENU}" data-udid="${device.udid}" data-pid="${device.pid}">Menu</button>
 				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="stream" data-command="start-stream" data-udid="${device.udid}" data-pid="${device.pid}">Start Stream</button>
 			</div>
+			<div class="mx-4 flex flex-col">
+				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="play-cloudy" data-command="${ControlCenterCommand.SEND_DEO}" data-extra="play-cloudy" data-udid="${device.udid}" data-pid="${device.pid}">Play Cloudy</button>
+				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="play-sunny" data-command="${ControlCenterCommand.SEND_DEO}" data-extra="play-sunny" data-udid="${device.udid}" data-pid="${device.pid}">Play Sunny</button>
+				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="play-rainy" data-command="${ControlCenterCommand.SEND_DEO}" data-extra="play-rainy" data-udid="${device.udid}" data-pid="${device.pid}">Play Rainy</button>
+				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="play-snowy" data-command="${ControlCenterCommand.SEND_DEO}" data-extra="play-snowy" data-udid="${device.udid}" data-pid="${device.pid}">Play Snowy</button>
+			</div>
 		</div>`.content;
 
-        const listId = ['deo-play', 'deo-connect', 'deo-run', 'screen-toggle', 'menu', 'stream'];
+        const listId = [
+            'deo-play',
+            'deo-connect',
+            'deo-run',
+            'screen-toggle',
+            'menu',
+            'stream',
+            'play-sunny',
+            'play-rainy',
+            'play-cloudy',
+            'play-snowy',
+        ];
         for (const item of listId) {
             const entry = extraControls.getElementById(item);
             if (entry) {
