@@ -7,7 +7,7 @@ import { ACTION } from '../../../common/Action';
 import GoogDeviceDescriptor from '../../../types/GoogDeviceDescriptor';
 import { ControlCenterCommand } from '../../../common/ControlCenterCommand';
 import { StreamClientScrcpy } from './StreamClientScrcpy';
-import { TinyH264Player } from '../../player/TinyH264Player';
+import { MsePlayer } from '../../player/MsePlayer';
 import SvgImage from '../../ui/SvgImage';
 import { html } from '../../ui/HtmlTag';
 // import { DevtoolsClient } from './DevtoolsClient';
@@ -145,12 +145,12 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
         if (command == 'start-stream') {
             inputValue = (<HTMLInputElement>document.getElementById('deo-input-ip')).value;
 
-            StreamClientScrcpy.registerPlayer(TinyH264Player);
+            StreamClientScrcpy.registerPlayer(MsePlayer);
 
             const parsedQuery = {
                 action: 'stream',
                 udid: `${udid}`,
-                player: 'tinyh264',
+                player: 'mse',
                 ws: `ws://${inputValue}:8886/`,
             };
             // StreamClientScrcpy.onDisconnected();
