@@ -240,17 +240,17 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
 			</div>
 			<div class="m-4">
 				<label class="block text-gray-700 text-sm font-bold mb-2" for="deo-input">
-					Remote Oculus IP:
+					Remote Device IP:
 				</label>
 				<input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="${ip}" id="deo-input-ip"></input>
 				<button data-command="${ControlCenterCommand.CONNECT_DEO}" class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="deo-connect">Connect</button>
 			</div>
 			<div class="mx-4 flex flex-col">
 				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="screen-toggle" data-command="${ControlCenterCommand.SCREEN_TOGGLE}" data-udid="${device.udid}" data-pid="${device.pid}">Toggle screen</button>
-				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="menu" data-command="${ControlCenterCommand.MENU}" data-udid="${device.udid}" data-pid="${device.pid}">Menu</button>
-				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="stream" data-command="start-stream" data-udid="${device.udid}" data-pid="${device.pid}">Start Stream</button>
+				<button class="mt-2 mb-4 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="menu" data-command="${ControlCenterCommand.MENU}" data-udid="${device.udid}" data-pid="${device.pid}">Menu</button>
+				<button class="mt-2 mb-4 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="stream" data-command="start-stream" data-udid="${device.udid}" data-pid="${device.pid}">Start Stream</button>
 			</div>
-			<div class="mx-4 flex flex-col">
+			<div class="mx-4 flex flex-col mb-4">
 				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="play-cloudy" data-command="${ControlCenterCommand.SEND_DEO}" data-extra="play-cloudy" data-udid="${device.udid}" data-pid="${device.pid}">Play Cloudy</button>
 				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="play-sunny" data-command="${ControlCenterCommand.SEND_DEO}" data-extra="play-sunny" data-udid="${device.udid}" data-pid="${device.pid}">Play Sunny</button>
 				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="play-rainy" data-command="${ControlCenterCommand.SEND_DEO}" data-extra="play-rainy" data-udid="${device.udid}" data-pid="${device.pid}">Play Rainy</button>
