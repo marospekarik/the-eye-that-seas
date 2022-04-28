@@ -7,7 +7,7 @@ import { ACTION } from '../../../common/Action';
 import GoogDeviceDescriptor from '../../../types/GoogDeviceDescriptor';
 import { ControlCenterCommand } from '../../../common/ControlCenterCommand';
 import { StreamClientScrcpy } from './StreamClientScrcpy';
-import { BroadwayPlayer } from '../../player/BroadwayPlayer';
+import { TinyH264Player } from '../../player/TinyH264Player';
 import SvgImage from '../../ui/SvgImage';
 import { html } from '../../ui/HtmlTag';
 // import { DevtoolsClient } from './DevtoolsClient';
@@ -136,7 +136,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
         let inputValue = null;
         if (command == ControlCenterCommand.SEND_DEO) {
             inputValue = (<HTMLInputElement>document.getElementById('deo-input')).value;
-            if (extraData) inputValue = 'Download/' + extraData + '/1_360.mp4';
+            if (extraData) inputValue = '/storage/emulated/0/Download/' + extraData + '/1_360.mp4';
         }
         if (command == ControlCenterCommand.CONNECT_DEO) {
             inputValue = (<HTMLInputElement>document.getElementById('deo-input-ip')).value;
@@ -145,12 +145,12 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
         if (command == 'start-stream') {
             inputValue = (<HTMLInputElement>document.getElementById('deo-input-ip')).value;
 
-            StreamClientScrcpy.registerPlayer(BroadwayPlayer);
+            StreamClientScrcpy.registerPlayer(TinyH264Player);
 
             const parsedQuery = {
                 action: 'stream',
                 udid: `${udid}`,
-                player: 'broadway',
+                player: 'tinyh264',
                 ws: `ws://${inputValue}:8886/`,
             };
             // StreamClientScrcpy.onDisconnected();
@@ -209,7 +209,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
         let hasPid = false;
         let selectInterface: HTMLSelectElement | undefined;
         const servicesId = `device_services_${fullName}`;
-        const ip = device.ip;
+        const ip = device['interfaces'][0]['ipv4'];
         console.log(ip);
         const row = html`<div class="device ${isActive ? 'active' : 'not-active'}">
             <div class="device-header">
@@ -242,7 +242,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
 				<label class="block text-gray-700 text-sm font-bold mb-2" for="deo-input">
 					Remote Oculus IP:
 				</label>
-				<input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="192.168.1.250" id="deo-input-ip"></input>
+				<input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="${ip}" id="deo-input-ip"></input>
 				<button data-command="${ControlCenterCommand.CONNECT_DEO}" class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="deo-connect">Connect</button>
 			</div>
 			<div class="mx-4 flex flex-col">
