@@ -4,23 +4,22 @@ import { Service } from '../../services/DeoService';
 export class RemoteDeo implements Service {
     private static instance?: RemoteDeo;
 
-    public static start(): void {
-        this.getInstance();
+    public static start(ip: string): void {
+        this.getInstance(ip);
     }
 
     public static hasInstance(): boolean {
         return !!RemoteDeo.instance;
     }
 
-    public static getInstance(): RemoteDeo {
+    public static getInstance(ip: string): RemoteDeo {
         if (!this.instance) {
-            this.instance = new RemoteDeo();
+            this.instance = new RemoteDeo(ip);
         }
         return this.instance;
     }
 
     protected title = 'RemoteDeo';
-
     protected data: any;
     protected client: any;
     protected lastSendTime: any;
@@ -29,12 +28,12 @@ export class RemoteDeo implements Service {
     protected lastErrorTime: any;
     protected host: string;
 
-    constructor() {
+    constructor(ip: string) {
         this.client = undefined;
         this.ticker = null;
         this.initialized = false;
         this.lastErrorTime = Date.now();
-        this.host = '192.168.43.76';
+        this.host = ip;
         this.data = null;
     }
 

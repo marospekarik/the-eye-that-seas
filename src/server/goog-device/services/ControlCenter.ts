@@ -100,9 +100,10 @@ export class ControlCenter extends BaseControlCenter<GoogDeviceDescriptor> imple
         console.log(ip + ', onstart deo');
         if (!this.remoteDeo) {
             console.log('creating new deo instance');
-            this.remoteDeo = new RemoteDeo();
-            this.remoteDeo.start();
+            this.remoteDeo = new RemoteDeo(ip);
+            this.remoteDeo.start(ip);
         } else {
+            console.log('deo already exists');
             this.remoteDeo.end();
             this.remoteDeo.start(ip);
         }

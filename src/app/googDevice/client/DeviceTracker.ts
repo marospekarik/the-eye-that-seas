@@ -246,7 +246,6 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
 				<button data-command="${ControlCenterCommand.CONNECT_DEO}" class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="deo-connect">Connect</button>
 			</div>
 			<div class="mx-4 flex flex-col">
-				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="deo-run" data-command="${ControlCenterCommand.RUN_DEO}" data-udid="${device.udid}" data-pid="${device.pid}">Launch DeoVR</button>
 				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="screen-toggle" data-command="${ControlCenterCommand.SCREEN_TOGGLE}" data-udid="${device.udid}" data-pid="${device.pid}">Toggle screen</button>
 				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="menu" data-command="${ControlCenterCommand.MENU}" data-udid="${device.udid}" data-pid="${device.pid}">Menu</button>
 				<button class="mt-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" id="stream" data-command="start-stream" data-udid="${device.udid}" data-pid="${device.pid}">Start Stream</button>
